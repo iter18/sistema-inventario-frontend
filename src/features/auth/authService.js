@@ -1,8 +1,8 @@
 // Lógica para interactuar con la API de autenticación
 
-const API_URL = 'http://tu-api-laravel.test/api/login'; // ¡Cambia esto por tu URL real!
+import axiosClient from '../../services/apiConnect/axiosClient';
 
-export const login = async (email, password) => {
+export const login = async (email, password,selectedCompany) => {
   // 'async' indica que esta función es asíncrona y usará 'await'.
 
   // Basic Auth funciona codificando 'usuario:contraseña' en Base64
@@ -10,21 +10,17 @@ export const login = async (email, password) => {
   const credentials = btoa(`${email}:${password}`); // btoa() es una función del navegador para codificar a Base64
 
   try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${credentials}`,
-        'Content-Type': 'applicatenviemosion/json', // Aunque no  body, es buena práctica
-        'Accept': 'application/json',
-      },
-    });
+    const response = await axiosClient.post('auth/login', 
+      {},
+      {
+        headers: {
+          Authorization: `Basic ${credentials}`,
+          'X-organizacionId': selectedCompany, // Enviamos la empresa seleccionada
+        },
+      });
 
-    if (!response.ok) {
-      // Si la respuesta no es exitosa (ej: 401 Unauthorized), lanzamos un error.
-      throw new Error('Credenciales inválidas');
-    }
-
-    return await response.json(); // Devuelve los datos del usuario o el token
+    // axios ya convierte la respuesta en JSON automáticamente
+    return response.data;
   } catch (error) {
     console.error('Error en el login:', error);
     throw error; // Re-lanzamos el error para que el componente que llamó se entere.

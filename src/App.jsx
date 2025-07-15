@@ -1,12 +1,12 @@
-import LoginPage from './pages/LoginPage' 
+import AppRouter from './routes/AppRouter'; // Importamos nuestro enrutador
 
 function App() {
 
   return (
-     <LoginPage />
+     <AppRouter />
   );
 }
 
-export default App
+export default App;
 
 
