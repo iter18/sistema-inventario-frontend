@@ -1,15 +1,18 @@
-import { useState } from 'react';
-import { login } from './authService'; // Importamos nuestra lógica de API
+import { useState, useContext } from 'react';
+import {  login as loginAPI } from './authService'; // Importamos nuestra lógica de API
 import Input from '../../components/Input'; // Importamos nuestro componente reutilizable
 import Button from '../../components/Button'; // Importamos nuestro componente reutilizable
 import Select from '../../components/Select'; // Importamos el nuevo componente Select
 import logo from '../../assets/KUKA-logo.svg'; // Importamos nuestro logo
 import { useCompanies } from '../../hooks/useCompanies'; 
+import {useNavigate} from "react-router-dom";
+import { AuthContext } from '../../store/AuthContext';
+
 
 const LoginForm = () => {
+  const { login } = useContext(AuthContext);
   // Hook para obtener los datos de las empresas
-
-
+  const navigate = useNavigate();
   // Creamos estados para guardar lo que el usuario escribe
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,9 +28,9 @@ const LoginForm = () => {
     setError(null);
 
     try {
-      const userData = await login(email, password,selectedCompany);
-      console.log('Login exitoso:', userData);
-      // Aquí, en un futuro, guardaríamos el token y redirigiríamos al usuario
+          const response = await loginAPI(email, password,selectedCompany);
+          login(response.access_token); // Llamamos a la función de login del contexto para actualizar el estado global
+          navigate('/dashboard'); // Redirigimos al dashboard si el login es exitoso
     } catch (err) {
       setError(err.response.data.error); // Si el login falla, guardamos el mensaje de error
     } finally {
@@ -36,7 +39,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
+    <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md shadow-lg shadow-orange-600">
       <div className="flex justify-center">
         <img src={logo} alt="Logo de la Empresa" className="h-20 text-blue-600" />
       </div>
@@ -56,7 +59,7 @@ const LoginForm = () => {
           </Select>
         </div>
         {error && <p className="text-sm text-center text-red-600">{error}</p>}
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" className="w-full py-2 px-4 bg-orange-600 text-white font-semibold rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled={isLoading} >
           {isLoading ? 'Cargando...' : 'Ingresar'}
         </Button>
       </form>

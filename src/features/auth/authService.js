@@ -1,6 +1,6 @@
 // Lógica para interactuar con la API de autenticación
-
 import axiosClient from '../../services/apiConnect/axiosClient';
+
 
 export const login = async (email, password,selectedCompany) => {
   // 'async' indica que esta función es asíncrona y usará 'await'.
@@ -11,13 +11,15 @@ export const login = async (email, password,selectedCompany) => {
 
   try {
     const response = await axiosClient.post('auth/login', 
-      {},
+      {},//body vacío porque usamos Basic Auth
+      // Enviamos las credenciales en la cabecera de la solicitud 
       {
         headers: {
           Authorization: `Basic ${credentials}`,
           'X-organizacionId': selectedCompany, // Enviamos la empresa seleccionada
         },
       });
+        
 
     // axios ya convierte la respuesta en JSON automáticamente
     return response.data;
@@ -26,3 +28,4 @@ export const login = async (email, password,selectedCompany) => {
     throw error; // Re-lanzamos el error para que el componente que llamó se entere.
   }
 };
+
