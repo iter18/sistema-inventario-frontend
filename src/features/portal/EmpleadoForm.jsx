@@ -1,8 +1,35 @@
+import React, { useState } from 'react';
 import Pane from '../../components/Pane';
+import Input from '../../components/Input';
+import Select from '../../components/Select';
+import Button from '../../components/Button'; // Importamos nuestro componente reutilizable
 
 
 const EmpleadoForm = () => {
     // Aquí iría la lógica del formulario de empleado
+      const [email, setEmail] = useState('');
+      const [nombre, setNombre] = useState('');
+      const [fechaIngreso, setFechaIngreso] = useState('');
+      const [noEmpleado, setNoEmpleado] = useState('');
+      const [selectedDepartamento, setSelectedCompany] = useState('');
+      const [isLoading, setIsLoading] = useState(false);
+      const [error, setError] = useState(null);
+   
+    
+      const handleSubmit = async (event) => {
+        event.preventDefault(); // Previene que el navegador recargue la página al enviar el form
+        setIsLoading(true);
+        setError(null);
+    
+        try {
+ 
+        } catch (err) {
+          setError(err.response.data.error); // Si el login falla, guardamos el mensaje de error
+        } finally {
+          setIsLoading(false); // Pase lo que pase, dejamos de cargar
+        }
+      };
+    
     return (
         <div>
         {/* Aquí irían los campos del formulario */}
@@ -12,51 +39,78 @@ const EmpleadoForm = () => {
                     <hr className="border-gray-400"></hr>
                     <div className="mt-8 max-w-3xl">
                         <form className="space-y-4 ">
+                            {/*<form className="grid grid-cols-1 md:grid-cols-2 gap-6 px-4">*/}
                             <label className="block">
                                 <span className="text-gray-700">Nombre completo</span>
-                                <input
-                                type="text"
-                                className="mt-0 block w-full border-none bg-transparent px-0.5
+                                 <Input type="text" 
+                                        className="mt-1 block w-full border-none bg-transparent px-0.5
                                             shadow-[inset_0_-2px_0_0_theme(colors.gray.200)]
                                             focus:shadow-[inset_0_-2px_0_0_theme(colors.black)]
-                                            focus:outline-none focus:ring-0"
-                                placeholder="Juan Pérez"
-                                />
+                                            focus:outline-none focus:ring-0" 
+                                        value={nombre} 
+                                        onChange={(e) => setNombre(e.target.value)} 
+                                        placeholder="Juan Pérez" 
+                                        required />
                             </label>
                             <label className="block">
                                 <span className="text-gray-700">Email</span>
-                                <input
-                                type="email"
-                                className="mt-0 block w-full border-0 border-b-2 border-gray-200 px-0.5 focus:border-black focus:ring-0"
-                                placeholder="john@example.com"
-                                />
+                                <Input type="email" 
+                                        className="mt-1 block w-full border-none bg-transparent px-0.5
+                                            shadow-[inset_0_-2px_0_0_theme(colors.gray.200)]
+                                            focus:shadow-[inset_0_-2px_0_0_theme(colors.black)]
+                                            focus:outline-none focus:ring-0" 
+                                        value={email} 
+                                        onChange={(e) => setEmail(e.target.value)} 
+                                        placeholder="usuario@kuka.com" 
+                                        required />
                             </label>
                             <label className="block">
                                 <span className="text-gray-700">No. empleado</span>
-                                <input
-                                type="text"
-                                className="mt-0 block w-full border-0 border-b-2 border-gray-200 px-0.5 focus:border-black focus:ring-0"
-                                placeholder="24060"
-                                />
+                                <Input type="text" 
+                                        className="mt-1 block w-full border-none bg-transparent px-0.5
+                                            shadow-[inset_0_-2px_0_0_theme(colors.gray.200)]
+                                            focus:shadow-[inset_0_-2px_0_0_theme(colors.black)]
+                                            focus:outline-none focus:ring-0" 
+                                        value={noEmpleado} 
+                                        onChange={(e) => setNoEmpleado(e.target.value)} 
+                                        placeholder="24060" 
+                                        required />
                             </label>
                             <label className="block">
-                                <span className="text-gray-700">Fecha de ingreso</span>
-                                <select
-                                className="mt-0 block w-full border-0 border-b-2 border-gray-200 pl-0.5 pr-10 focus:border-black focus:ring-0"
-                                >
-                                    <option>DD/MM/YYYY</option>
-                                    <option>Wedding</option>
-                                    <option>Birthday</option>
-                                <option>Other</option>
-                                </select>
+                                <span className="text-gray-700">Departamento</span>
+                                <Select value={selectedDepartamento} 
+                                        onChange={(e) => selectedDepartamento(e.target.value)} 
+                                        className="mt-2 block w-full border-none bg-transparent px-0.5
+                                            shadow-[inset_0_-2px_0_0_theme(colors.gray.200)]
+                                            focus:shadow-[inset_0_-2px_0_0_theme(colors.black)]
+                                            focus:outline-none focus:ring-0"
+                                        >
+                                        <option>0001 - Departamento 1</option>
+                                        <option>0002 - Departamento 2</option>
+                                        <option>0003 - Departamento 3</option>
+                                </Select>
                             </label>
+                             <label className="block">
+                              <span className="text-gray-700">Fecha de ingreso</span>
+                              <Input type="date" 
+                                        className="mt-1 block w-full border-none bg-transparent px-0.5
+                                            shadow-[inset_0_-2px_0_0_theme(colors.gray.200)]
+                                            focus:shadow-[inset_0_-2px_0_0_theme(colors.black)]
+                                            focus:outline-none focus:ring-0" 
+                                        value={fechaIngreso} 
+                                        onChange={(e) => setFechaIngreso(e.target.value)} 
+                                        required />
+                            </label>
+                            <Button type="submit" className="py-3 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled={isLoading} >
+                              {isLoading ? 'Cargando...' : 'Registrar Empleado'}
+                            </Button>
                             {/*<label className="block">
                                 <span className="text-gray-700">Additional details</span>
                                 <textarea
                                 className="mt-0 block w-full border-0 border-b-2 border-gray-200 px-0.5 focus:border-black focus:ring-0"
                                 rows="2"
                                 ></textarea>
-                            </label> */}
+                            </label> 
                             <div className="block">
                                 <div className="mt-2">
                                 <div>
@@ -69,7 +123,7 @@ const EmpleadoForm = () => {
                                     </label>
                                 </div>
                                 </div>
-                            </div>
+                            </div>*/}
                         </form>
                     </div>
                 </div> 
