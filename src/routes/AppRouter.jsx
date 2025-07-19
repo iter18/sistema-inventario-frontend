@@ -4,6 +4,7 @@ import AuthLayout from '../layout/AuthLayout';
 import DashboardLayout from '../layout/DashboardLayout';
 import Dashboard from '../pages/Dashboard';
 import ProtectedRoute from './ProtectedRoute';
+import EmpleadoPage from '../pages/EmpleadoPage'; // Asegúrate de que la ruta sea correcta
 
 const AppRouter = () => {
   return (
@@ -21,11 +22,12 @@ const AppRouter = () => {
         {/* Rutas que usan el layout del dashboard (barra lateral, contenido principal) 
           Estas rutas están protegidas y requieren autenticación
         */}
-        <Route path="/dashboard" element={   
+        <Route  element={   
           <ProtectedRoute>
             <DashboardLayout />
           </ProtectedRoute>}>
-          <Route index element={<Dashboard />} /> {/* Página principal del dashboard */}
+          <Route path="/dashboard" element={<Dashboard />} /> {/* Página principal del dashboard */}
+          <Route path="/portal/empleados" element={<EmpleadoPage />} /> {/* Página de empleados */}
          {/* <Route path="products" element={<ProductsPage />} /> Página de productos */}
   
         </Route>

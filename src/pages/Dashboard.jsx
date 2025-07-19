@@ -1,4 +1,3 @@
-import logo from '../assets/kuka_back.avif';
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../store/AuthContext';
 
@@ -17,12 +16,12 @@ const Dashboard = () => {
         }
     }, []);
   return (
-      <div className="flex items-center justify-center h-full bg-gray-100">
-        <div className="max-w-md p-8 bg-white rounded-lg shadow-md">
+      <div className="flex items-center bg-white/0 justify-center h-full bg-gray-100">
+        <div className="max-w-md p-10 bg-white rounded-lg shadow-md">
             <h1 className="text-3xl font-bold text-center text-gray-800 mb-4">Bienvenido, {auth.user}</h1>
             <p className="text-center text-gray-600 mb-6">Aquí podrás gestionar tus datos y acceder a las funcionalidades del sistema.</p>
         </div>  
-            <img src={logo} alt="Logo de KUKA" className="h-64 opacity-25" />
+            
         </div>
   );
 };

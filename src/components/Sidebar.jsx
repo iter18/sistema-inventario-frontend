@@ -60,7 +60,7 @@ const Sidebar = () => {
           </li>
           <li>
             <NavLink 
-              to="/users"
+              to="/portal/empleados"
               className={({ isActive }) => `flex items-center p-4 text-sm hover:bg-gray-700 ${isActive ? 'bg-gray-900' : ''}`}
             >
               <UsersIcon />
