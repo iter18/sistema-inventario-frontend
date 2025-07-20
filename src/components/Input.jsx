@@ -10,8 +10,11 @@ const Input = ({ type = 'text', value, onChange, placeholder, ...props }) => {
       className={`${baseClasses} ${props.className || ''}`} // Podríamos añadir estilos genéricos para todos los inputs
       type={type}
       value={value}
+      id={props.id} // Si nos pasan un id, lo usamos; si no, no se añade
+      name={props.name} // Similar al id, para el atributo name
       onChange={onChange}
       placeholder={placeholder}
+       onBlur={props.onBlur} // Si nos pasan una función para manejar el evento onBlur, la usamos
       {...props} // Pasamos el resto de las props directamente al elemento <input>
     />
   );

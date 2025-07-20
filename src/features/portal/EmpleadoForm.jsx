@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import Pane from '../../components/Pane';
 import Input from '../../components/Input';
 import Select from '../../components/Select';
@@ -7,11 +9,32 @@ import Button from '../../components/Button'; // Importamos nuestro componente r
 
 const EmpleadoForm = () => {
     // Aquí iría la lógica del formulario de empleado
-      const [email, setEmail] = useState('');
-      const [nombre, setNombre] = useState('');
-      const [fechaIngreso, setFechaIngreso] = useState('');
-      const [noEmpleado, setNoEmpleado] = useState('');
-      const [selectedDepartamento, setSelectedCompany] = useState('');
+
+     // Validación con Yup
+      const validacion = Yup.object({
+        nombre: Yup.string().required("El nombre es obligatorio"),
+        email: Yup.string().email("Formato inválido").required("El email es obligatorio"),
+        noEmpleado: Yup.string().required("El número de empleado es obligatorio"),
+        departamento: Yup.string().required("El departamento es obligatorio"),
+        fechaIngreso: Yup.date().required("La fecha de ingreso es obligatoria"),
+  
+      });
+
+        // Configuración de Formik
+      const formik = useFormik({
+        initialValues: {
+          nombre: "",
+          email: "",
+          noEmpleado: "",
+          departamento: "",
+          fechaIngreso: ""
+        },
+        validationSchema: validacion,
+        onSubmit: (valores) => {
+          console.log("Formulario enviado:", valores);
+          // Aquí llamarías tu WS, por ejemplo con fetch o axios
+        },
+      });
       const [isLoading, setIsLoading] = useState(false);
       const [error, setError] = useState(null);
    
@@ -38,7 +61,7 @@ const EmpleadoForm = () => {
                 <div className="px-4 sm:px-9 lg:px-8">
                     <hr className="border-gray-400"></hr>
                     <div className="mt-8 max-w-3xl">
-                        <form className="space-y-4 ">
+                        <form onSubmit={formik.handleSubmit} className="space-y-4 ">
                             {/*<form className="grid grid-cols-1 md:grid-cols-2 gap-6 px-4">*/}
                             <label className="block">
                                 <span className="text-gray-700">Nombre completo</span>
@@ -47,10 +70,16 @@ const EmpleadoForm = () => {
                                             shadow-[inset_0_-2px_0_0_theme(colors.gray.200)]
                                             focus:shadow-[inset_0_-2px_0_0_theme(colors.black)]
                                             focus:outline-none focus:ring-0" 
-                                        value={nombre} 
-                                        onChange={(e) => setNombre(e.target.value)} 
+                                        id="nombre" 
+                                        name="nombre" 
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        value={formik.values.nombre}
                                         placeholder="Juan Pérez" 
-                                        required />
+                                         />
+                                  {formik.touched.nombre && formik.errors.nombre && (
+                                    <p className="text-red-500 text-sm">{formik.errors.nombre}</p>
+                                  )}
                             </label>
                             <label className="block">
                                 <span className="text-gray-700">Email</span>
@@ -59,10 +88,16 @@ const EmpleadoForm = () => {
                                             shadow-[inset_0_-2px_0_0_theme(colors.gray.200)]
                                             focus:shadow-[inset_0_-2px_0_0_theme(colors.black)]
                                             focus:outline-none focus:ring-0" 
-                                        value={email} 
-                                        onChange={(e) => setEmail(e.target.value)} 
+                                        id="email" 
+                                        name="email" 
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        value={formik.values.email}
                                         placeholder="usuario@kuka.com" 
-                                        required />
+                                         />
+                                        {formik.touched.email && formik.errors.email && (
+                                          <p className="text-red-500 text-sm">{formik.errors.email}</p>
+                                        )}
                             </label>
                             <label className="block">
                                 <span className="text-gray-700">No. empleado</span>
@@ -71,15 +106,25 @@ const EmpleadoForm = () => {
                                             shadow-[inset_0_-2px_0_0_theme(colors.gray.200)]
                                             focus:shadow-[inset_0_-2px_0_0_theme(colors.black)]
                                             focus:outline-none focus:ring-0" 
-                                        value={noEmpleado} 
-                                        onChange={(e) => setNoEmpleado(e.target.value)} 
+                                        id="noEmpleado" 
+                                        name="noEmpleado" 
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        value={formik.values.noEmpleado}
                                         placeholder="24060" 
-                                        required />
+                                         />
+                                         {formik.touched.noEmpleado && formik.errors.noEmpleado && (
+                                          <p className="text-red-500 text-sm">{formik.errors.noEmpleado}</p>
+                                        )}
                             </label>
                             <label className="block">
                                 <span className="text-gray-700">Departamento</span>
-                                <Select value={selectedDepartamento} 
-                                        onChange={(e) => selectedDepartamento(e.target.value)} 
+                                <Select id="departamento" 
+                                        name="departamento" 
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        value={formik.values.departamento}
+                                        placeholder="Seleccione un departamento"
                                         className="mt-2 block w-full border-none bg-transparent px-0.5
                                             shadow-[inset_0_-2px_0_0_theme(colors.gray.200)]
                                             focus:shadow-[inset_0_-2px_0_0_theme(colors.black)]
@@ -89,6 +134,9 @@ const EmpleadoForm = () => {
                                         <option>0002 - Departamento 2</option>
                                         <option>0003 - Departamento 3</option>
                                 </Select>
+                                {formik.touched.departamento && formik.errors.departamento && (
+                                          <p className="text-red-500 text-sm">{formik.errors.departamento}</p>
+                                        )}
                             </label>
                              <label className="block">
                               <span className="text-gray-700">Fecha de ingreso</span>
@@ -97,9 +145,15 @@ const EmpleadoForm = () => {
                                             shadow-[inset_0_-2px_0_0_theme(colors.gray.200)]
                                             focus:shadow-[inset_0_-2px_0_0_theme(colors.black)]
                                             focus:outline-none focus:ring-0" 
-                                        value={fechaIngreso} 
-                                        onChange={(e) => setFechaIngreso(e.target.value)} 
-                                        required />
+                                        id="fechaIngreso" 
+                                        name="fechaIngreso" 
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        value={formik.values.fechaIngreso}
+                                         />
+                                         {formik.touched.fechaIngreso && formik.errors.fechaIngreso && (
+                                          <p className="text-red-500 text-sm">{formik.errors.fechaIngreso}</p>
+                                        )}
                             </label>
                             <Button type="submit" className="py-3 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled={isLoading} >
                               {isLoading ? 'Cargando...' : 'Registrar Empleado'}
