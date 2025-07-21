@@ -4,11 +4,16 @@ import * as Yup from "yup";
 import Pane from '../../components/Pane';
 import Input from '../../components/Input';
 import Select from '../../components/Select';
-import Button from '../../components/Button'; // Importamos nuestro componente reutilizable
+import Button from '../../components/Button';
+import { useDepartamentos } from '../../hooks/useDepartaments'; // Importamos nuestro componente reutilizable
 
 
 const EmpleadoForm = () => {
     // Aquí iría la lógica del formulario de empleado
+   
+      const {departamentos,isLoading: departamentosLoading, error: departamentosError} = useDepartamentos();
+      const [isLoading, setIsLoading] = useState(false);
+      const [error, setError] = useState(null);
 
      // Validación con Yup
       const validacion = Yup.object({
@@ -35,9 +40,17 @@ const EmpleadoForm = () => {
           // Aquí llamarías tu WS, por ejemplo con fetch o axios
         },
       });
-      const [isLoading, setIsLoading] = useState(false);
-      const [error, setError] = useState(null);
+
    
+      //llenado de combo para departamentos
+      useEffect(() => { 
+        // Aquí podrías hacer una llamada a tu API para obtener los departamentos
+        // Por ejemplo, usando fetch o axios
+        // fetch('/api/departamentos')
+        //   .then(response => response.json())
+        //   .then(data => setDepartamentos(data))
+
+      }, []);
     
       const handleSubmit = async (event) => {
         event.preventDefault(); // Previene que el navegador recargue la página al enviar el form
@@ -129,10 +142,12 @@ const EmpleadoForm = () => {
                                             shadow-[inset_0_-2px_0_0_theme(colors.gray.200)]
                                             focus:shadow-[inset_0_-2px_0_0_theme(colors.black)]
                                             focus:outline-none focus:ring-0"
+                                         disabled={departamentosLoading}
                                         >
-                                        <option>0001 - Departamento 1</option>
-                                        <option>0002 - Departamento 2</option>
-                                        <option>0003 - Departamento 3</option>
+                                        <option value="">{departamentosLoading ? 'Cargando departamentos...' : 'Seleccione un departamento'}</option>
+                                        {Array.isArray(departamentos) && departamentos.map(dep => (
+                                          <option key={dep.id} value={dep.id}>{dep.departamento}</option>
+                                        ))}
                                 </Select>
                                 {formik.touched.departamento && formik.errors.departamento && (
                                           <p className="text-red-500 text-sm">{formik.errors.departamento}</p>
@@ -155,6 +170,7 @@ const EmpleadoForm = () => {
                                           <p className="text-red-500 text-sm">{formik.errors.fechaIngreso}</p>
                                         )}
                             </label>
+                            {error && <p className="text-sm text-center text-red-600">{error}</p>}
                             <Button type="submit" className="py-3 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled={isLoading} >
                               {isLoading ? 'Cargando...' : 'Registrar Empleado'}
                             </Button>

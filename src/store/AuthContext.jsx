@@ -5,6 +5,7 @@ export const AuthContext = createContext();
 
 
 export const AuthProvider = ({ children }) => {
+    const [isAuthenticated, setIsAuthenticated] = useState(true);
     // Proporcionamos el contexto de autenticación a los componentes hijos
     // creamos un estado para almacenar la información de autenticación en forma de objeto
   const [auth, setAuth] = useState({
@@ -50,6 +51,7 @@ export const AuthProvider = ({ children }) => {
         });
         sessionStorage.clear();
         window.location.href = '/';
+        setIsAuthenticated(false);
     }   
     
     //inyectamos el contexto de autenticación y las funciones de login y logout
