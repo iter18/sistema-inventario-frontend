@@ -1,8 +1,7 @@
 import axios from 'axios';
-import {  useContext } from 'react';
-import { AuthContext } from '../../store/AuthContext';
+import AlertService from '../../utils/AlertService';
+import { logout } from '../../features/auth/authService';
 
-const { logout } = useContext(AuthContext);
 // 1. Creamos una instancia de Axios con configuración base.
 const axiosClientPrivate = axios.create({
   baseURL: 'http://localhost:8000/api', // Tu URL base del backend
@@ -29,7 +28,9 @@ axiosClientPrivate.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       // Aquí podrías redirigir al usuario a la página de login o mostrar un mensaje de error.
       console.error('Token inválido o expirado');
-      logout(); // Llamamos a la función de logout del contexto para limpiar el estado de autenticación
+      AlertService.error('Error','Sesión inválida, por favor inicia sesión nuevamente.')
+      .then(() => logout());
+         // Llamamos a la función de logout para limpiar el estado de autenticación
     }
     return Promise.reject(error);
   }

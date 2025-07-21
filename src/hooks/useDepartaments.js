@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
 import {getDepartamentosRequest} from '../services/UtilsApiService';
+import AlertService  from '../utils/AlertService';
 
 export const useDepartamentos = () => {
   const [departamentos, setDepartamentos] = useState([]);
@@ -14,6 +15,11 @@ export const useDepartamentos = () => {
       try {
         const response = await getDepartamentosRequest();
         setDepartamentos(response.data.data);
+        if(response.status === 403){
+            AlertService.error('No tienes permisos para acceder a los departamentos');
+            return;
+        }
+
       } catch (err) {
         setError('No se pudieron cargar los departamentos.');
       } finally {

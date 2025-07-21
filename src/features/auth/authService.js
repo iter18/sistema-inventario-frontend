@@ -29,3 +29,11 @@ export const login = async (email, password,selectedCompany) => {
   }
 };
 
+export const logout = () => {
+  // Aquí podrías hacer una llamada a la API para cerrar sesión si es necesario.
+  // Por ahora, simplemente eliminamos el token del sessionStorage.
+  sessionStorage.clear();
+  // También podrías redirigir al usuario a la página de inicio o login.
+  window.location.href = '/';
+} 
+
