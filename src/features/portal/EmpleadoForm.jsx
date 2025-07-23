@@ -6,6 +6,8 @@ import Input from '../../components/Input';
 import Select from '../../components/Select';
 import Button from '../../components/Button';
 import { useDepartamentos } from '../../hooks/useDepartaments'; // Importamos nuestro componente reutilizable
+import { registraUsuario } from './empleadoService';
+import AlertService  from '../../utils/AlertService';
 
 
 const EmpleadoForm = () => {
@@ -13,7 +15,7 @@ const EmpleadoForm = () => {
    
       const {departamentos,isLoading: departamentosLoading, error: departamentosError} = useDepartamentos();
       const [isLoading, setIsLoading] = useState(false);
-      const [error, setError] = useState(null);
+      //const [error, setError] = useState(null);
 
      // Validación con Yup
       const validacion = Yup.object({
@@ -35,37 +37,37 @@ const EmpleadoForm = () => {
           fechaIngreso: ""
         },
         validationSchema: validacion,
-        onSubmit: (valores) => {
+        onSubmit: async (valores) => {
           console.log("Formulario enviado:", valores);
-          // Aquí llamarías tu WS, por ejemplo con fetch o axios
+          setIsLoading(true);
+          //setError(null);
+          try {
+            const requestB = valores;
+            const response = await registraUsuario(valores);
+
+            AlertService.success("Exito!",response.message);
+            formik.resetForm();
+            setIsLoading(false);
+            //setError(null);
+      
+          } catch (err) {
+             if (err.response) {
+              // El servidor respondió con un status fuera del rango 2xx
+              const status = err.response.status;
+              const message = err.response.data?.message || err.response.data?.error || 'Ocurrió un error.';
+              //setError(message); // Opcional: para mostrar error en el form
+              AlertService.error("Error", message);
+            } else {
+              // Error de red o algo más impidió la petición
+              //setError('Error de conexión. Inténtalo de nuevo.');
+              AlertService.error('Error de red', 'No se pudo conectar con el servidor.');
+            }
+          } finally {
+            setIsLoading(false);
+          }
         },
       });
 
-   
-      //llenado de combo para departamentos
-      useEffect(() => { 
-        // Aquí podrías hacer una llamada a tu API para obtener los departamentos
-        // Por ejemplo, usando fetch o axios
-        // fetch('/api/departamentos')
-        //   .then(response => response.json())
-        //   .then(data => setDepartamentos(data))
-
-      }, []);
-    
-      const handleSubmit = async (event) => {
-        event.preventDefault(); // Previene que el navegador recargue la página al enviar el form
-        setIsLoading(true);
-        setError(null);
-    
-        try {
- 
-        } catch (err) {
-          setError(err.response.data.error); // Si el login falla, guardamos el mensaje de error
-        } finally {
-          setIsLoading(false); // Pase lo que pase, dejamos de cargar
-        }
-      };
-    
     return (
         <div>
         {/* Aquí irían los campos del formulario */}
@@ -170,7 +172,7 @@ const EmpleadoForm = () => {
                                           <p className="text-red-500 text-sm">{formik.errors.fechaIngreso}</p>
                                         )}
                             </label>
-                            {error && <p className="text-sm text-center text-red-600">{error}</p>}
+                            {/*error && <p className="text-sm text-center text-red-600">{error}</p>*/}
                             <Button type="submit" className="py-3 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled={isLoading} >
                               {isLoading ? 'Cargando...' : 'Registrar Empleado'}
                             </Button>

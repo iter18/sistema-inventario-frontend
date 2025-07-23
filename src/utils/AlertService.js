@@ -3,15 +3,16 @@ import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
 const AlertService = {
-  success: (title = '¡Éxito!', text = 'La operación fue exitosa.') => {
+  success: (title = '¡Éxito!', text = '') => {
     return Swal.fire({
-      title: `<span class="text-2xl font-bold text-green-700">${title}</span>`,
-      html: `<p class="text-base text-gray-700">${text}</p>`,
+      title: `<span class="mt-1 text-2xl font-bold text-green-700">${title}</span>`,
+      html: `<p class="text-base font-bold text-gray-700">${text}</p>`,
       icon: 'success',
       customClass: {
-        popup: 'p-6 rounded-xl shadow-lg',
+        popup: 'p-3 rounded-xl shadow-lg',
         confirmButton: 'bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded',
-        icon: 'text-5xl',
+         icon: 'mt-2 text-xs', 
+         htmlContainer: 'text-sm text-gray-700 mt-0'
       },
       buttonsStyling: false,
     });
@@ -20,7 +21,7 @@ const AlertService = {
   error: (title = '¡Error!', text = '') => {
     return Swal.fire({
       title: `<span class="mt-1 text-2xl font-bold text-red-700">${title}</span>`,
-      html: `<p class="text-base text-gray-700">${text}</p>`,
+      html: `<p class="text-base font-bold text-gray-700">${text}</p>`,
       icon: 'error',
       customClass: {
         popup: 'p-3 rounded-xl shadow-lg',
