@@ -6,11 +6,11 @@ import Input from '../../components/Input';
 import Select from '../../components/Select';
 import Button from '../../components/Button';
 import { useDepartamentos } from '../../hooks/useDepartaments'; // Importamos nuestro componente reutilizable
-import { registraUsuario,loadEmpleados,getPaginatedData } from './empleadoService';
+import { registraUsuario,loadEmpleados } from './empleadoService';
 import AlertService  from '../../utils/AlertService';
 import Pagination from '../../components/Pagination';
 import EmpleadoList from '../../components/EmpleadoList';
-
+import MenuItem from '@mui/material/MenuItem';
 
 const EmpleadoForm = () => {
     // Aquí iría la lógica del formulario de empleado
@@ -43,11 +43,11 @@ const EmpleadoForm = () => {
         },
         validationSchema: validacion,
         onSubmit: async (valores) => {
-          setIsLoading(true);
           try {
             const response = await registraUsuario(valores);
             AlertService.success("Exito!",response.message);
             formik.resetForm();
+
             // Forzamos la recarga de la lista de empleados.
             // Una buena UX es volver a la página 1 para ver el nuevo registro.
             if (paginaActual !== 1) {
@@ -83,6 +83,7 @@ const EmpleadoForm = () => {
           const response = await loadEmpleados(pagina);
           setListaEmpleados(response.data);
           setTotalPaginas(response.meta.last_page);
+          
         } catch (error) {
           console.error('Error al cargar empleados:', error);
           AlertService.error('Error', 'No se pudo cargar la lista de empleados.');
@@ -107,7 +108,6 @@ const EmpleadoForm = () => {
                         <form onSubmit={formik.handleSubmit} className="space-y-4 ">
                             {/*<form className="grid grid-cols-1 md:grid-cols-2 gap-6 px-4">*/}
                             <label className="block">
-                                <span className="text-gray-700">Nombre completo</span>
                                  <Input type="text" 
                                         className="mt-1 block w-full border-none bg-transparent px-0.5
                                             shadow-[inset_0_-2px_0_0_theme(colors.gray.200)]
@@ -118,14 +118,17 @@ const EmpleadoForm = () => {
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                         value={formik.values.nombre}
-                                        placeholder="Juan Pérez" 
+                                        placeholder="Juan Perez"
+                                        label="Nombre completo" 
+                                        obligatorio={true}
+                                        isError = {formik.touched.nombre && Boolean(formik.errors.nombre)}
+
                                          />
                                   {formik.touched.nombre && formik.errors.nombre && (
                                     <p className="text-red-500 text-sm">{formik.errors.nombre}</p>
                                   )}
                             </label>
                             <label className="block">
-                                <span className="text-gray-700">Email</span>
                                 <Input type="email" 
                                         className="mt-1 block w-full border-none bg-transparent px-0.5
                                             shadow-[inset_0_-2px_0_0_theme(colors.gray.200)]
@@ -136,14 +139,16 @@ const EmpleadoForm = () => {
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                         value={formik.values.email}
-                                        placeholder="usuario@kuka.com" 
+                                        placeholder="usuario@kuka.com"
+                                        label="Email" 
+                                        obligatorio={true}
+                                        isError = {formik.touched.email && Boolean(formik.errors.email)}
                                          />
                                         {formik.touched.email && formik.errors.email && (
                                           <p className="text-red-500 text-sm">{formik.errors.email}</p>
                                         )}
                             </label>
                             <label className="block">
-                                <span className="text-gray-700">No. empleado</span>
                                 <Input type="text" 
                                         className="mt-1 block w-full border-none bg-transparent px-0.5
                                             shadow-[inset_0_-2px_0_0_theme(colors.gray.200)]
@@ -154,29 +159,35 @@ const EmpleadoForm = () => {
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                         value={formik.values.noEmpleado}
-                                        placeholder="24060" 
+                                        label="No. empleado"
+                                        obligatorio={true}
+                                        placeholder="2064"
+                                        isError = {formik.touched.noEmpleado && Boolean(formik.errors.noEmpleado)}
                                          />
                                          {formik.touched.noEmpleado && formik.errors.noEmpleado && (
                                           <p className="text-red-500 text-sm">{formik.errors.noEmpleado}</p>
                                         )}
                             </label>
                             <label className="block">
-                                <span className="text-gray-700">Departamento</span>
                                 <Select id="departamento" 
                                         name="departamento" 
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                         value={formik.values.departamento}
-                                        placeholder="Seleccione un departamento"
                                         className="mt-2 block w-full border-none bg-transparent px-0.5
                                             shadow-[inset_0_-2px_0_0_theme(colors.gray.200)]
                                             focus:shadow-[inset_0_-2px_0_0_theme(colors.black)]
                                             focus:outline-none focus:ring-0"
                                          disabled={departamentosLoading}
+                                         label={departamentosLoading ? "Cargando departamentos..." : "Seleccione un departamento"}
+                                         isError = {formik.touched.departamento && Boolean(formik.errors.departamento)}
+                                         obligatorio={true}
                                         >
-                                        <option value="">{departamentosLoading ? 'Cargando departamentos...' : 'Seleccione un departamento'}</option>
+                                        {/*<option value="">{departamentosLoading ? 'Cargando departamentos...' : 'Seleccione un departamento'}</option>*/}
+
                                         {Array.isArray(departamentos) && departamentos.map(dep => (
-                                          <option key={dep.id} value={dep.id}>{dep.departamento}</option>
+                                          //<option key={dep.id} value={dep.id}>{dep.departamento}</option>
+                                          <MenuItem key={dep.id} value={dep.id}>{dep.departamento}</MenuItem>
                                         ))}
                                 </Select>
                                 {formik.touched.departamento && formik.errors.departamento && (
@@ -195,6 +206,8 @@ const EmpleadoForm = () => {
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                         value={formik.values.fechaIngreso}
+                                        obligatorio={true}
+                                        isError = {formik.touched.fechaIngreso && Boolean(formik.errors.fechaIngreso)}
                                          />
                                          {formik.touched.fechaIngreso && formik.errors.fechaIngreso && (
                                           <p className="text-red-500 text-sm">{formik.errors.fechaIngreso}</p>
@@ -202,7 +215,7 @@ const EmpleadoForm = () => {
                             </label>
                             {/*error && <p className="text-sm text-center text-red-600">{error}</p>*/}
                             <Button type="submit" className="py-3 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled={isLoading} >
-                              {isLoading ? 'Cargando...' : 'Registrar Empleado'}
+                              {formik.isSubmitting ? 'Registrando...' : 'Registrar Empleado'}
                             </Button>
                             {/*<label className="block">
                                 <span className="text-gray-700">Additional details</span>
@@ -227,8 +240,9 @@ const EmpleadoForm = () => {
                         </form>
                     </div>
                 </div> 
-                <hr className="my-6 border-gray-300" /> 
-                {cargandoEmpleados ? (
+                <hr className="my-6 border-gray-300" />
+                 
+                {listaEmpleados.length > 0 && ( cargandoEmpleados ? (
                   <p className="text-center mt-4">Cargando empleados...</p>
                 ) : (
                   <>
@@ -239,7 +253,7 @@ const EmpleadoForm = () => {
                       onPageChange={(page) => setPaginaActual(page)}
                     />
                   </>
-                )}
+                ))}
 
         </Pane>
     

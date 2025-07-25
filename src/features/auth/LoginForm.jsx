@@ -7,7 +7,7 @@ import logo from '../../assets/KUKA-logo.svg'; // Importamos nuestro logo
 import { useCompanies } from '../../hooks/useCompanies'; 
 import {useNavigate} from "react-router-dom";
 import { AuthContext } from '../../store/AuthContext';
-
+import MenuItem from '@mui/material/MenuItem';
 
 const LoginForm = () => {
   const { login } = useContext(AuthContext);
@@ -53,9 +53,16 @@ const LoginForm = () => {
           <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Contraseña" required />
         </div>
         <div>
-          <Select value={selectedCompany} onChange={(e) => setSelectedCompany(e.target.value)} disabled={companiesLoading}>
-            <option value="">{companiesLoading ? 'Cargando empresas...' : 'Seleccione una empresa'}</option>
-            {Array.isArray(companies) && companies.map(comp => <option key={comp.id} value={comp.id}>{comp.organizacion}</option>)}
+          <Select 
+          value={selectedCompany} 
+          onChange={(e) => setSelectedCompany(e.target.value)} 
+          label={companiesLoading ? "Cargando orgnaizaciones..." : "Selecciona la organización"}
+          disabled={companiesLoading}>
+            {Array.isArray(companies) && companies.map(comp => 
+          
+            <MenuItem key={comp.id} value={comp.id}>{comp.organizacion}</MenuItem>
+            )}
+            
           </Select>
         </div>
         {error && <p className="text-sm text-center text-red-600">{error}</p>}

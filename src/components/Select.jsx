@@ -1,17 +1,56 @@
 // Un componente de Select genérico y reutilizable
+import React from 'react';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MuiSelect from '@mui/material/Select'; // 1. Renombramos el import para evitar colisión
+import FormHelperText from '@mui/material/FormHelperText';
 
-const Select = ({ value, onChange, children, ...props }) => {
-  // 'children' aquí serán las etiquetas <option> que le pasemos
-  const baseClasses = "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-200 bg-white";
+const Select = ({
+  label,
+  value,
+  onChange,
+  onBlur,
+  name,
+  id,
+  children,
+  disabled,
+  isError,
+  helperText,
+  obligatorio=false,
+  ...props
+}) => {
+  const labelId = `${id}-label`;
+  // 2. Usamos FormControl para agrupar el Label y el Select, una práctica estándar en MUI.
   return (
-    <select
-      className={`${baseClasses} ${props.className || ''}`}
-      value={value}
-      onChange={onChange}
-      {...props}
-    >
-      {children}
-    </select>
+    <FormControl fullWidth variant="filled" error={isError} disabled={disabled}>
+      <InputLabel id={labelId}>{label}</InputLabel>
+      <MuiSelect
+        required={obligatorio}
+        labelId={labelId}
+        id={id}
+        name={name}
+        value={value}
+        onChange={onChange}
+        onBlur={onBlur}
+        label={label} // La prop label es importante para que el InputLabel flote correctamente
+
+        {...props}
+        sx={{
+          backgroundColor: 'transparent',
+          '&:before': {
+            borderBottomColor: 'rgba(0,0,0,0.42)', // línea inferior antes de focus
+          },
+          '&:hover:before': {
+            borderBottomColor: 'rgba(0,0,0,0.87)', // línea inferior al pasar el mouse
+          },
+          '&:after': {
+            borderBottomColor: 'blue', // línea inferior al enfocar
+          }
+        }}
+      >
+        {children}
+      </MuiSelect>
+    </FormControl>
   );
 };
 
