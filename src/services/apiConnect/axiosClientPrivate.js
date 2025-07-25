@@ -29,7 +29,13 @@ axiosClientPrivate.interceptors.response.use(
       // Aquí podrías redirigir al usuario a la página de login o mostrar un mensaje de error.
       console.error('Token inválido o expirado');
       AlertService.error('Error','Sesión inválida, por favor inicia sesión nuevamente.')
-      .then(() => logout());
+       .then(result => {
+          if (result.isConfirmed) {
+            logout();
+          }
+          // Siempre se rechaza el error para que el llamador maneje el error también
+          return Promise.reject(error);
+        });
          // Llamamos a la función de logout para limpiar el estado de autenticación
     }
     return Promise.reject(error);
