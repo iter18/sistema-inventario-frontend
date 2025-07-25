@@ -5,7 +5,6 @@ import AlertService  from '../utils/AlertService';
 export const useDepartamentos = () => {
   const [departamentos, setDepartamentos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null); 
 
 
 
@@ -28,5 +27,5 @@ export const useDepartamentos = () => {
     fetchDepartamentos();
   }, []); // El array vacío asegura que se ejecute solo una vez al montar el componente.
 
-  return { departamentos, isLoading, error };
+  return { departamentos, isLoading };
 }

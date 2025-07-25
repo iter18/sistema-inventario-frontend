@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Pane from '../../components/Pane';
@@ -6,16 +6,21 @@ import Input from '../../components/Input';
 import Select from '../../components/Select';
 import Button from '../../components/Button';
 import { useDepartamentos } from '../../hooks/useDepartaments'; // Importamos nuestro componente reutilizable
-import { registraUsuario } from './empleadoService';
+import { registraUsuario,loadEmpleados,getPaginatedData } from './empleadoService';
 import AlertService  from '../../utils/AlertService';
+import Pagination from '../../components/Pagination';
+import EmpleadoList from '../../components/EmpleadoList';
 
 
 const EmpleadoForm = () => {
     // Aquí iría la lógica del formulario de empleado
    
-      const {departamentos,isLoading: departamentosLoading, error: departamentosError} = useDepartamentos();
-      const [isLoading, setIsLoading] = useState(false);
-      //const [error, setError] = useState(null);
+  const {departamentos,isLoading: departamentosLoading} = useDepartamentos();
+  const [isLoading, setIsLoading] = useState(false);
+  const [listaEmpleados, setListaEmpleados] = useState([]);
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [totalPaginas, setTotalPaginas] = useState(1);
+  const [cargandoEmpleados, setCargandoEmpleados] = useState(false);
 
      // Validación con Yup
       const validacion = Yup.object({
@@ -38,21 +43,23 @@ const EmpleadoForm = () => {
         },
         validationSchema: validacion,
         onSubmit: async (valores) => {
-          console.log("Formulario enviado:", valores);
           setIsLoading(true);
-          //setError(null);
           try {
-            const requestB = valores;
             const response = await registraUsuario(valores);
-
             AlertService.success("Exito!",response.message);
             formik.resetForm();
-            setIsLoading(false);
-            //setError(null);
+            // Forzamos la recarga de la lista de empleados.
+            // Una buena UX es volver a la página 1 para ver el nuevo registro.
+            if (paginaActual !== 1) {
+              setPaginaActual(1);
+            } else {
+              // Si ya estamos en la página 1, el useEffect no se disparará,
+              // así que llamamos a la función de carga manualmente.
+              cargarEmpleados(1);
+            }
       
           } catch (err) {
              if (err.response) {
-              // El servidor respondió con un status fuera del rango 2xx
               const status = err.response.status;
               const message = err.response.data?.message || err.response.data?.error || 'Ocurrió un error.';
               //setError(message); // Opcional: para mostrar error en el form
@@ -67,6 +74,27 @@ const EmpleadoForm = () => {
           }
         },
       });
+
+      // Función para cargar los empleados envuelta en useCallback para optimización
+      const cargarEmpleados = useCallback(async (pagina) => {
+        console.log("Cargando empleados...");
+        setCargandoEmpleados(true);
+        try {
+          const response = await loadEmpleados(pagina);
+          setListaEmpleados(response.data);
+          setTotalPaginas(response.meta.last_page);
+        } catch (error) {
+          console.error('Error al cargar empleados:', error);
+          AlertService.error('Error', 'No se pudo cargar la lista de empleados.');
+        } finally {     
+          setCargandoEmpleados(false);
+        }
+      }, []); // No hay dependencias ya que loadEmpleados y AlertService son estables.
+
+      //Carga inicial de empleados
+      useEffect(() => {
+        cargarEmpleados(paginaActual);
+      }, [paginaActual, cargarEmpleados]);
 
     return (
         <div>
@@ -200,85 +228,19 @@ const EmpleadoForm = () => {
                     </div>
                 </div> 
                 <hr className="my-6 border-gray-300" /> 
-                  {/* Tabla de resultados 
-  {resultados.length > 0 && (
-    <div className="overflow-x-auto rounded-lg border border-gray-300">
-      <table className="min-w-full table-auto text-sm text-left">
-        <thead className="bg-gray-100 text-gray-700 font-semibold">
-          <tr>
-            <th className="px-4 py-2">Nombre</th>
-            <th className="px-4 py-2">Email</th>
-            <th className="px-4 py-2">Fecha</th>
-            <th className="px-4 py-2 text-center">Acciones</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200 bg-white">
-          {resultados.map((item, index) => (
-            <tr key={item.id}>
-              <td className="px-4 py-2">{item.nombre}</td>
-              <td className="px-4 py-2">{item.email}</td>
-              <td className="px-4 py-2">{item.fecha}</td>
-              <td className="px-4 py-2 text-center">
-                
-                <button className="relative group">
-                  <svg className="w-5 h-5 text-gray-600 hover:text-gray-800" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10 3a1.5 1.5 0 100 3 1.5 1.5 0 000-3zM10 8a1.5 1.5 0 100 3 1.5 1.5 0 000-3zM10 13a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" />
-                  </svg>
-                  <div className="absolute z-10 hidden group-hover:block right-0 mt-2 bg-white border rounded shadow-lg">
-                    <button className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left">Editar</button>
-                    <button className="block px-4 py-2 text-sm hover:bg-gray-100 w-full text-left text-red-600">Eliminar</button>
-                  </div>
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )}  */}
-   {/* Tabla de resultados */}
-      <div className="mt-10 overflow-x-auto">
-        <table className="min-w-full bg-white border rounded shadow-sm">
-          <thead>
-            <tr className="bg-gray-100 text-gray-700 text-left text-sm uppercase">
-              <th className="px-4 py-3 border-b">ID</th>
-              <th className="px-4 py-3 border-b">Nombre</th>
-              <th className="px-4 py-3 border-b">Correo</th>
-              <th className="px-4 py-3 border-b">Rol</th>
-              <th className="px-4 py-3 border-b text-center">Acciones</th>
-            </tr>
-          </thead>
-          <tbody className="text-gray-700">
-            {[
-              { id: 1, nombre: 'Juan Pérez', correo: 'juan@mail.com', rol: 'Admin' },
-              { id: 2, nombre: 'Ana López', correo: 'ana@mail.com', rol: 'Usuario' },
-              { id: 3, nombre: 'Carlos Ruiz', correo: 'carlos@mail.com', rol: 'Editor' }
-            ].map((user) => (
-              <tr key={user.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 border-b">{user.id}</td>
-                <td className="px-4 py-3 border-b">{user.nombre}</td>
-                <td className="px-4 py-3 border-b">{user.correo}</td>
-                <td className="px-4 py-3 border-b">{user.rol}</td>
-                <td className="px-4 py-3 border-b text-center">
-                  <div className="relative group inline-block">
-                    <button className="px-2 py-1 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700">
-                      ⋮
-                    </button>
-                    <div className="absolute right-0 z-10 hidden group-hover:block bg-white border rounded shadow-md mt-1 w-28">
-                      <button className="block w-full px-3 py-2 text-sm text-left hover:bg-gray-100">
-                        Editar
-                      </button>
-                      <button className="block w-full px-3 py-2 text-sm text-left text-red-600 hover:bg-gray-100">
-                        Eliminar
-                      </button>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                {cargandoEmpleados ? (
+                  <p className="text-center mt-4">Cargando empleados...</p>
+                ) : (
+                  <>
+                    <EmpleadoList empleados={listaEmpleados} />
+                    <Pagination
+                      currentPage={paginaActual}
+                      totalPages={totalPaginas}
+                      onPageChange={(page) => setPaginaActual(page)}
+                    />
+                  </>
+                )}
+
         </Pane>
     
         {/* Aquí podrías añadir más componentes o lógica según sea necesario */}

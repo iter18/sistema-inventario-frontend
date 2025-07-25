@@ -22,4 +22,24 @@ export const registraUsuario = async (empleado) => {
     }
 
 
-};   
+};
+
+export const loadEmpleados = async (pagina) => {
+    try {
+        const response = await axiosClientPrivate.get('/empleados/lista',{
+            params: {
+                page: pagina,
+                per_page: 3
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error al cargar empleados:', error);
+        throw error;
+    }
+};
+
+export function getPaginatedData(data, currentPage, itemsPerPage) {
+  const start = (currentPage - 1) * itemsPerPage;
+  return data.slice(start, start + itemsPerPage);
+}
