@@ -33,10 +33,9 @@ axiosClientPrivate.interceptors.response.use(
           if (result.isConfirmed) {
             logout();
           }
-          // Siempre se rechaza el error para que el llamador maneje el error también
-          return Promise.reject(error);
         });
          // Llamamos a la función de logout para limpiar el estado de autenticación
+         return;
     }
     return Promise.reject(error);
   }

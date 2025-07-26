@@ -6,91 +6,31 @@ import Input from '../../components/Input';
 import Select from '../../components/Select';
 import Button from '../../components/Button';
 import { useDepartamentos } from '../../hooks/useDepartaments'; // Importamos nuestro componente reutilizable
-import { registraUsuario,loadEmpleados } from './empleadoService';
-import AlertService  from '../../utils/AlertService';
+//import { registraUsuario,loadEmpleados } from './empleadoService';
+//import AlertService  from '../../utils/AlertService';
 import Pagination from '../../components/Pagination';
 import EmpleadoList from '../../components/EmpleadoList';
 import MenuItem from '@mui/material/MenuItem';
+import { useEmpleadoForm } from '../../hooks/useEmpleados';
 
 const EmpleadoForm = () => {
     // Aquí iría la lógica del formulario de empleado
+
+  const {
+    formik,
+    isLoading,
+    isUpdateReg,
+    listaEmpleados,
+    totalPaginas,
+    paginaActual,
+    cargandoEmpleados,
+    setPaginaActual,
+    cargarEmpleados,
+    onEditarEmpleado,
+    eliminarEmpleado,
+  } = useEmpleadoForm();
    
   const {departamentos,isLoading: departamentosLoading} = useDepartamentos();
-  const [isLoading, setIsLoading] = useState(false);
-  const [listaEmpleados, setListaEmpleados] = useState([]);
-  const [paginaActual, setPaginaActual] = useState(1);
-  const [totalPaginas, setTotalPaginas] = useState(1);
-  const [cargandoEmpleados, setCargandoEmpleados] = useState(false);
-
-     // Validación con Yup
-      const validacion = Yup.object({
-        nombre: Yup.string().required("El nombre es obligatorio"),
-        email: Yup.string().email("Formato inválido").required("El email es obligatorio"),
-        noEmpleado: Yup.string().required("El número de empleado es obligatorio"),
-        departamento: Yup.string().required("El departamento es obligatorio"),
-        fechaIngreso: Yup.date().required("La fecha de ingreso es obligatoria"),
-  
-      });
-
-        // Configuración de Formik
-      const formik = useFormik({
-        initialValues: {
-          nombre: "",
-          email: "",
-          noEmpleado: "",
-          departamento: "",
-          fechaIngreso: ""
-        },
-        validationSchema: validacion,
-        onSubmit: async (valores) => {
-          try {
-            const response = await registraUsuario(valores);
-            AlertService.success("Exito!",response.message);
-            formik.resetForm();
-
-            // Forzamos la recarga de la lista de empleados.
-            // Una buena UX es volver a la página 1 para ver el nuevo registro.
-            if (paginaActual !== 1) {
-              setPaginaActual(1);
-            } else {
-              // Si ya estamos en la página 1, el useEffect no se disparará,
-              // así que llamamos a la función de carga manualmente.
-              cargarEmpleados(1);
-            }
-      
-          } catch (err) {
-             if (err.response) {
-              const status = err.response.status;
-              const message = err.response.data?.message || err.response.data?.error || 'Ocurrió un error.';
-              //setError(message); // Opcional: para mostrar error en el form
-              AlertService.error("Error", message);
-            } else {
-              // Error de red o algo más impidió la petición
-              //setError('Error de conexión. Inténtalo de nuevo.');
-              AlertService.error('Error de red', 'No se pudo conectar con el servidor.');
-            }
-          } finally {
-            setIsLoading(false);
-          }
-        },
-      });
-
-      // Función para cargar los empleados envuelta en useCallback para optimización
-      const cargarEmpleados = useCallback(async (pagina) => {
-        console.log("Cargando empleados...");
-        setCargandoEmpleados(true);
-        try {
-          const response = await loadEmpleados(pagina);
-          setListaEmpleados(response.data);
-          setTotalPaginas(response.meta.last_page);
-          
-        } catch (error) {
-          console.error('Error al cargar empleados:', error);
-          AlertService.error('Error', 'No se pudo cargar la lista de empleados.');
-        } finally {     
-          setCargandoEmpleados(false);
-        }
-      }, []); // No hay dependencias ya que loadEmpleados y AlertService son estables.
 
       //Carga inicial de empleados
       useEffect(() => {
@@ -173,7 +113,7 @@ const EmpleadoForm = () => {
                                         name="departamento" 
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
-                                        value={formik.values.departamento}
+                                        value={formik.values.departamento || ''}
                                         className="mt-2 block w-full border-none bg-transparent px-0.5
                                             shadow-[inset_0_-2px_0_0_theme(colors.gray.200)]
                                             focus:shadow-[inset_0_-2px_0_0_theme(colors.black)]
@@ -215,7 +155,7 @@ const EmpleadoForm = () => {
                             </label>
                             {/*error && <p className="text-sm text-center text-red-600">{error}</p>*/}
                             <Button type="submit" className="py-3 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled={isLoading} >
-                              {formik.isSubmitting ? 'Registrando...' : 'Registrar Empleado'}
+                              {formik.isSubmitting ? 'Guardando...' : (isUpdateReg ? 'Actualizar Empleado' : 'Registrar Empleado')}
                             </Button>
                             {/*<label className="block">
                                 <span className="text-gray-700">Additional details</span>
@@ -246,7 +186,7 @@ const EmpleadoForm = () => {
                   <p className="text-center mt-4">Cargando empleados...</p>
                 ) : (
                   <>
-                    <EmpleadoList empleados={listaEmpleados} />
+                    <EmpleadoList empleados={listaEmpleados} onEdit={onEditarEmpleado} onDelete={eliminarEmpleado} />
                     <Pagination
                       currentPage={paginaActual}
                       totalPages={totalPaginas}

@@ -1,5 +1,4 @@
 import axiosClientPrivate from "../../services/apiConnect/axiosClientPrivate";  
-import AlertService  from '../../utils/AlertService';
 
 export const registraUsuario = async (empleado) => {
 

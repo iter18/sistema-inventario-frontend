@@ -14,7 +14,7 @@ import {
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 // Componente para encapsular la lógica del menú de cada fila
-const RowMenu = ({ empleadoId, onEdit, onDelete }) => {
+const RowMenu = ({ empleado, onEdit, onDelete }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -27,12 +27,12 @@ const RowMenu = ({ empleadoId, onEdit, onDelete }) => {
   };
 
   const handleEdit = () => {
-    onEdit(empleadoId);
+    onEdit(empleado);
     handleClose();
   };
 
   const handleDelete = () => {
-    onDelete(empleadoId);
+    onDelete(empleado.id);
     handleClose();
   };
 
@@ -70,7 +70,7 @@ const EmpleadoList = ({ empleados, onEdit, onDelete }) => {
               <TableCell>{emp.noEmpleado}</TableCell>
               <TableCell>{emp.correo}</TableCell>
               <TableCell align="center">
-                <RowMenu empleadoId={emp.id} onEdit={onEdit} onDelete={onDelete} />
+                <RowMenu empleado={emp} onEdit={onEdit} onDelete={onDelete} />
               </TableCell>
             </TableRow>
           ))}
