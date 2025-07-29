@@ -42,3 +42,24 @@ export function getPaginatedData(data, currentPage, itemsPerPage) {
   const start = (currentPage - 1) * itemsPerPage;
   return data.slice(start, start + itemsPerPage);
 }
+
+export const modificarEmpleado = async (empleado) => {
+    try {
+        const body = JSON.stringify({
+            nombre: empleado.nombre,
+            numeroEmpleado: empleado.noEmpleado,
+            correo: empleado.email,
+            fechaIngreso:empleado.fechaIngreso,
+            departamentoId:empleado.departamento
+        });
+        const response = await axiosClientPrivate.put(`/empleados/actualizar/${empleado.id}`, 
+            body
+            );
+        response.data;
+        return response.data;
+    }  catch (error) {
+        console.error('Error en la actualización de usuario:', error);
+        throw error;
+    }
+    
+};

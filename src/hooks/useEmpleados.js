@@ -3,7 +3,7 @@ import { useState, useCallback } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import AlertService from "../utils/AlertService";
-import { registraUsuario, loadEmpleados } from "../features/portal/empleadoService";
+import { registraUsuario, loadEmpleados,modificarEmpleado } from "../features/portal/empleadoService";
 
 export const useEmpleadoForm = () => {
   //inicalizan estados para el formulario  
@@ -19,6 +19,7 @@ export const useEmpleadoForm = () => {
     noEmpleado: "",
     departamento: "",
     fechaIngreso: "",
+    id: "",
   });
 
   //función para llenar campos de formulario
@@ -29,6 +30,7 @@ export const useEmpleadoForm = () => {
       noEmpleado: empleado?.noEmpleado || "",
       departamento: empleado?.departamento ? String(empleado.departamento) : "",
       fechaIngreso: empleado?.fechaIngreso || "",
+      id: empleado?.id || "",
     });
   };
   //validación de formulario con YUP
@@ -45,38 +47,38 @@ export const useEmpleadoForm = () => {
     initialValues: formValues,
     enableReinitialize: true,//bandera para indicarle a formik que se reutilizara el formualario para editar
     validationSchema,
-    onSubmit: async (valores) => {
+    onSubmit: async (valores, { resetForm }) => {
+      setIsLoading(true);
       try {
-        setIsLoading(true);
-        let response;
+        // Se determina si es una actualización o un nuevo registro
+        const response = isUpdateReg
+          ? await modificarEmpleado(valores)
+          : await registraUsuario(valores);
 
+        AlertService.success("¡Éxito!", response.message);
+
+        // Limpieza y reseteo del formulario
+        resetForm();
+        onFilledForm({});
         if (isUpdateReg) {
-          // lógica de actualización si la tuvieras
-          console.log("Se actualizará el usuario");
-          formik.resetForm();// se resetea el formulario a los valores inciales con los que lleno
-          onFilledForm({});//Se pasa vacio el objeto para que limpie los campos del formulario,
           setIsUpdateReg(false);
-          return;
-        } else {
-            //logica para registrar usuario
-          response = await registraUsuario(valores);
-          AlertService.success("¡Éxito!", response.message);
-          formik.resetForm();
-          onFilledForm({});
         }
 
-        // Recarga de empleados
+        // Recarga de empleados después de una operación exitosa
+        // Si la página actual no es la 1, la cambiamos y el useEffect se encargará de recargar.
+        // Si ya estamos en la 1, forzamos la recarga.
         if (paginaActual !== 1) {
           setPaginaActual(1);
         } else {
           await cargarEmpleados(1);
         }
+
       } catch (err) {
         if (err.response) {
           const message = err.response.data?.message || 'Ocurrió un error.';
           AlertService.error("Error", message);
         } else {
-          AlertService.error("Error de red", "No se pudo conectar con el servidor.");
+          AlertService.error("Error de Red", "No se pudo conectar con el servidor.");
         }
       } finally {
         setIsLoading(false);

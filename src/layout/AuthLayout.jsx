@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom';
 // Define el layout principal (fondo, centrado, etc.).
 const AuthLayout = () => {
   return (
-    <main className="flex items-center justify-center min-h-screen bg-gray-800">
+    <main className="flex items-center justify-center min-h-screen bg-zinc-900">
       <Outlet /> {/* Aquí es donde React Router renderizará la página actual (ej. LoginPage) */}
     </main>
   );

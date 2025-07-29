@@ -24,7 +24,7 @@ const Sidebar = () => {
     // - text-white: Texto blanco
     // - Ancho condicional: 'w-64' (ancho) si está abierto, 'w-20' si está cerrado
     // - transition-all duration-300: Anima todos los cambios (el ancho) durante 300ms
-    <div className={`h-screen bg-gray-800 text-white flex flex-col ${isOpen ? 'w-64' : 'w-20'} transition-all duration-300 shadow-lg shadow-orange-600`}>
+    <div className={`h-screen bg-zinc-900 text-white flex flex-col ${isOpen ? 'w-64' : 'w-20'} transition-all duration-300 shadow-lg shadow-orange-600`}>
       {/* --- Cabecera de la Barra Lateral --- */}
       <div className="flex items-center justify-between p-4 border-b border-gray-700">
         {/* Logo: se oculta si la barra está cerrada */}

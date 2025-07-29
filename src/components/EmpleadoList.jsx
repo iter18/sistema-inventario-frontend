@@ -15,7 +15,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 // Componente para encapsular la lógica del menú de cada fila
 const RowMenu = ({ empleado, onEdit, onDelete }) => {
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null); 
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => {
