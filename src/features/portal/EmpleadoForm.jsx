@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useFormik } from "formik";
-import * as Yup from "yup";
 import Pane from '../../components/Pane';
 import Input from '../../components/Input';
 import Select from '../../components/Select';
@@ -11,37 +9,18 @@ import { useDepartamentos } from '../../hooks/useDepartaments'; // Importamos nu
 import Pagination from '../../components/Pagination';
 import EmpleadoList from '../../components/EmpleadoList';
 import MenuItem from '@mui/material/MenuItem';
-import { useEmpleadoForm } from '../../hooks/useEmpleados';
+//import { useEmpleadoForm } from '../../hooks/useEmpleados';
 
-const EmpleadoForm = () => {
+const EmpleadoForm = ({ formik, isLoading, isUpdateReg, empleadoInicial, onCancelar }) => {
     // Aquí iría la lógica del formulario de empleado
 
-  const {
-    formik,
-    isLoading,
-    isUpdateReg,
-    listaEmpleados,
-    totalPaginas,
-    paginaActual,
-    cargandoEmpleados,
-    setPaginaActual,
-    cargarEmpleados,
-    onEditarEmpleado,
-    eliminarEmpleado,
-  } = useEmpleadoForm();
    
   const {departamentos,isLoading: departamentosLoading} = useDepartamentos();
-
-      //Carga inicial de empleados
-      useEffect(() => {
-        cargarEmpleados(paginaActual);
-      }, [paginaActual, cargarEmpleados]);
 
     return (
         <div>
         {/* Aquí irían los campos del formulario */}
-        <Pane title="Formulario de Empleado"
-              descrpcion = "En esta sección podrás gestionar empleados. Añadir, editar o eliminar según sea necesario.">
+
                 <div className="px-4 sm:px-9 lg:px-8">
                     <hr className="border-gray-400"></hr>
                     <div className="mt-8 max-w-3xl">
@@ -154,9 +133,25 @@ const EmpleadoForm = () => {
                                         )}
                             </label>
                             {/*error && <p className="text-sm text-center text-red-600">{error}</p>*/}
-                            <Button type="submit" className="py-3 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled={isLoading} >
-                              {formik.isSubmitting ? 'Guardando...' : (isUpdateReg ? 'Actualizar Empleado' : 'Registrar Empleado')}
-                            </Button>
+                               <div className="flex gap-4">
+                                  <Button 
+                                    type="submit"
+                                    className="py-3 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700"
+                                    disabled={formik.isSubmitting}
+                                  >
+                                    {formik.isSubmitting ? 'Guardando...' : (empleadoInicial ? 'Actualizar Empleado' : 'Registrar Empleado')}
+                                  </Button>
+                                  
+                                  {onCancelar && (
+                                    <Button 
+                                      type="button"
+                                      onClick={onCancelar}
+                                      className="py-3 px-4 bg-gray-600 text-white font-semibold rounded-md hover:bg-gray-700"
+                                    >
+                                      Cancelar
+                                    </Button>
+                                  )}
+                              </div>
                             {/*<label className="block">
                                 <span className="text-gray-700">Additional details</span>
                                 <textarea
@@ -180,24 +175,8 @@ const EmpleadoForm = () => {
                         </form>
                     </div>
                 </div> 
-                <hr className="my-6 border-gray-300" />
-                 
-                {listaEmpleados.length > 0 && ( cargandoEmpleados ? (
-                  <p className="text-center mt-4">Cargando empleados...</p>
-                ) : (
-                  <>
-                    <EmpleadoList empleados={listaEmpleados} onEdit={onEditarEmpleado} onDelete={eliminarEmpleado} />
-                    <Pagination
-                      currentPage={paginaActual}
-                      totalPages={totalPaginas}
-                      onPageChange={(page) => setPaginaActual(page)}
-                    />
-                  </>
-                ))}
 
-        </Pane>
     
-        {/* Aquí podrías añadir más componentes o lógica según sea necesario */}
         </div>
     );
     }

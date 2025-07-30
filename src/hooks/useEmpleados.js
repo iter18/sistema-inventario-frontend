@@ -5,10 +5,10 @@ import * as Yup from "yup";
 import AlertService from "../utils/AlertService";
 import { registraUsuario, loadEmpleados,modificarEmpleado } from "../features/portal/empleadoService";
 
-export const useEmpleadoForm = () => {
+export const useEmpleadoForm = ({ onGuardado,isUpdate }) => {
   //inicalizan estados para el formulario  
   const [isLoading, setIsLoading] = useState(false);
-  const [isUpdateReg, setIsUpdateReg] = useState(false);
+  const [isUpdateReg, setIsUpdateReg] = useState(isUpdate);
   const [listaEmpleados, setListaEmpleados] = useState([]);
   const [paginaActual, setPaginaActual] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
@@ -51,7 +51,7 @@ export const useEmpleadoForm = () => {
       setIsLoading(true);
       try {
         // Se determina si es una actualización o un nuevo registro
-        const response = isUpdateReg
+        const response = isUpdate
           ? await modificarEmpleado(valores)
           : await registraUsuario(valores);
 
@@ -62,6 +62,11 @@ export const useEmpleadoForm = () => {
         onFilledForm({});
         if (isUpdateReg) {
           setIsUpdateReg(false);
+        }
+
+        // Notificar al componente padre que se guardó exitosamente
+        if (onGuardado) {
+          onGuardado();
         }
 
         // Recarga de empleados después de una operación exitosa
@@ -120,6 +125,6 @@ export const useEmpleadoForm = () => {
     setPaginaActual,
     cargarEmpleados,
     onEditarEmpleado,
-    eliminarEmpleado,
+    eliminarEmpleado
   };
 };
