@@ -86,7 +86,7 @@ const EmpleadoForm = ({ formik, empleadoInicial, onCancelar }) => {
                                         name="departamento" 
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
-                                        value={formik.values.departamento || ''}
+                                        value={departamentosLoading ? '' : (formik.values.departamento || '')}
                                         className="mt-2 block w-full border-none bg-transparent px-0.5
                                             shadow-[inset_0_-2px_0_0_theme(colors.gray.200)]
                                             focus:shadow-[inset_0_-2px_0_0_theme(colors.black)]
