@@ -5,10 +5,10 @@ import * as Yup from "yup";
 import AlertService from "../utils/AlertService";
 import { registraUsuario, loadEmpleados,modificarEmpleado } from "../features/portal/empleadoService";
 
-export const useEmpleadoForm = ({ onGuardado,isUpdate }) => {
+export const useEmpleadoForm = ({ onGuardado}) => {
   //inicalizan estados para el formulario  
   const [isLoading, setIsLoading] = useState(false);
-  const [isUpdateReg, setIsUpdateReg] = useState(isUpdate);
+  const [isUpdateReg, setIsUpdateReg] = useState(false);
   const [listaEmpleados, setListaEmpleados] = useState([]);
   const [paginaActual, setPaginaActual] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
@@ -47,13 +47,13 @@ export const useEmpleadoForm = ({ onGuardado,isUpdate }) => {
     initialValues: formValues,
     enableReinitialize: true,//bandera para indicarle a formik que se reutilizara el formualario para editar
     validationSchema,
-    onSubmit: async (valores, { resetForm }) => {
+    onSubmit: async (registro, { resetForm }) => {
       setIsLoading(true);
       try {
         // Se determina si es una actualización o un nuevo registro
-        const response = isUpdate
-          ? await modificarEmpleado(valores)
-          : await registraUsuario(valores);
+        const response = isUpdateReg
+          ? await modificarEmpleado(registro)
+          : await registraUsuario(registro);
 
         AlertService.success("¡Éxito!", response.message);
 
@@ -106,7 +106,6 @@ export const useEmpleadoForm = ({ onGuardado,isUpdate }) => {
 
   const onEditarEmpleado = (empleado) => {
     onFilledForm(empleado);
-    setIsUpdateReg(true);
   };
 
   const eliminarEmpleado = (empleado) => {
@@ -114,10 +113,16 @@ export const useEmpleadoForm = ({ onGuardado,isUpdate }) => {
     // Aquí iría tu lógica de eliminación
   };
 
+/**
+ * @param {boolean} res
+ */
+  const regUpdate = (res) => {
+    setIsUpdateReg(res);
+  }
+
+
   return {
     formik,
-    isLoading,
-    isUpdateReg,
     listaEmpleados,
     totalPaginas,
     paginaActual,
@@ -125,6 +130,7 @@ export const useEmpleadoForm = ({ onGuardado,isUpdate }) => {
     setPaginaActual,
     cargarEmpleados,
     onEditarEmpleado,
-    eliminarEmpleado
+    eliminarEmpleado,
+    regUpdate
   };
 };

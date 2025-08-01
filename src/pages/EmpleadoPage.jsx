@@ -15,24 +15,19 @@ const EmpleadoPage = () => {
   const [vistaActual, setVistaActual] = useState('lista'); // 'lista', 'formulario', 'busqueda'
   const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null);
   const [terminoBusqueda, setTerminoBusqueda] = useState('');
-  const [isRegUpdate, setRegUpdate] = useState(false);
 
     // Función para volver a la lista
   const handleVolverALista = () => {
     setVistaActual('lista');
     setEmpleadoSeleccionado(null);
     onEditarEmpleado({});
-    setRegUpdate(false);
-    // = false;
-    // Limpiar parámetros de URL
+    regUpdate(false);
     setSearchParams({});
   };
 
 
   const {
     formik,
-    isLoading,
-    isUpdateReg,
     listaEmpleados,
     totalPaginas,
     paginaActual,
@@ -40,13 +35,14 @@ const EmpleadoPage = () => {
     setPaginaActual,
     cargarEmpleados,
     onEditarEmpleado,
-    eliminarEmpleado
-  } = useEmpleadoForm({onGuardado:handleVolverALista}, isRegUpdate);
+    eliminarEmpleado,
+    regUpdate
+  } = useEmpleadoForm({onGuardado:handleVolverALista});
 
     // Leer parámetros de URL al cargar el componente
   useEffect(() => {
     const action = searchParams.get('action');
-    const empleadoId = searchParams.get('empleadoId');
+    const empleadoId = true;
     
     if (action === 'new') {
       setVistaActual('formulario');
@@ -55,9 +51,8 @@ const EmpleadoPage = () => {
       setVistaActual('busqueda');
     } else if (action === 'edit' && empleadoId) {
       // Buscar el empleado por ID y cargarlo para edición
-      const empleado = listaEmpleados.find(emp => emp.id === parseInt(empleadoId));
-      if (empleado) {
-        setEmpleadoSeleccionado(empleado);
+      //const empleado = listaEmpleados.find(emp => emp.id === parseInt(empleadoId));
+      if (empleadoSeleccionado) {
         setVistaActual('formulario');
       }
     } else {
@@ -76,10 +71,10 @@ const EmpleadoPage = () => {
   const handleEditarEmpleado = (empleado) => {
     onEditarEmpleado(empleado);
     setVistaActual('formulario');
-    setRegUpdate(true);
     setEmpleadoSeleccionado(empleado);
+    regUpdate(true);
     // Actualizar URL para reflejar el estado
-    setSearchParams({ action: 'edit', empleadoId: empleado.id });
+    setSearchParams({ action: 'edit'});
   };
 
     // Función para manejar la creación de nuevo empleado
@@ -87,7 +82,7 @@ const EmpleadoPage = () => {
     setEmpleadoSeleccionado(null);
     setVistaActual('formulario');
     setSearchParams({ action: 'new' });
-    setRegUpdate(false);
+    regUpdate(false);
   };
 
 
@@ -95,7 +90,7 @@ const EmpleadoPage = () => {
   const handleMostrarBusqueda = () => {
     setVistaActual('busqueda');
     setSearchParams({ action: 'search' });
-    setRegUpdate(false);
+    regUpdate(false);
   };
     // Función para manejar la búsqueda
   const handleBuscar = (termino) => {
@@ -119,8 +114,6 @@ const EmpleadoPage = () => {
           >
             <EmpleadoForm
               formik={formik}
-              isLoading={isLoading}
-              isUpdateReg={isUpdateReg}
               empleadoInicial={empleadoSeleccionado}
               onCancelar={handleVolverALista}
             />

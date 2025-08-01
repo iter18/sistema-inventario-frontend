@@ -1,17 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import Pane from '../../components/Pane';
 import Input from '../../components/Input';
 import Select from '../../components/Select';
 import Button from '../../components/Button';
 import { useDepartamentos } from '../../hooks/useDepartaments'; // Importamos nuestro componente reutilizable
-//import { registraUsuario,loadEmpleados } from './empleadoService';
-//import AlertService  from '../../utils/AlertService';
-import Pagination from '../../components/Pagination';
-import EmpleadoList from '../../components/EmpleadoList';
 import MenuItem from '@mui/material/MenuItem';
 //import { useEmpleadoForm } from '../../hooks/useEmpleados';
 
-const EmpleadoForm = ({ formik, isLoading, isUpdateReg, empleadoInicial, onCancelar }) => {
+const EmpleadoForm = ({ formik, empleadoInicial, onCancelar }) => {
     // Aquí iría la lógica del formulario de empleado
 
    
@@ -179,6 +173,6 @@ const EmpleadoForm = ({ formik, isLoading, isUpdateReg, empleadoInicial, onCance
     
         </div>
     );
-    }
+  }
     
 export default EmpleadoForm;
