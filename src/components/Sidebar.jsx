@@ -42,7 +42,7 @@ const Sidebar = () => {
             {/* Usamos NavLink para que el link activo se pueda estilizar */}
             <NavLink 
               to="/dashboard" 
-              className={({ isActive }) => `flex items-center p-4 text-sm hover:bg-gray-700 ${isActive ? 'bg-gray-900' : ''}`}
+              className={({ isActive }) => `flex items-center p-4 text-sm hover:bg-orange-700 ${isActive ? 'bg-orange-800' : ''}`}
             >
               <HomeIcon />
               {/* El texto del link se oculta si la barra está cerrada */}
@@ -61,7 +61,7 @@ const Sidebar = () => {
           <li>
             <NavLink 
               to="/portal/empleados"
-              className={({ isActive }) => `flex items-center p-4 text-sm hover:bg-gray-700 ${isActive ? 'bg-gray-900' : ''}`}
+              className={({ isActive }) => `flex items-center p-4 text-sm hover:bg-orange-700 ${isActive ? 'bg-orange-800' : ''}`}
             >
               <UsersIcon />
               <span className={`ml-4 whitespace-nowrap ${!isOpen && 'hidden'}`}>Empleados</span>
