@@ -28,7 +28,7 @@ export const useEmpleadoForm = ({ onGuardado}) => {
       nombre: empleado?.nombre || "",
       email: empleado?.correo || "",
       noEmpleado: empleado?.noEmpleado || "",
-      departamento: empleado?.departamento ? String(empleado.departamento) : "",
+      departamento: empleado?.departamento? String(empleado.departamento.id) : "",
       fechaIngreso: empleado?.fechaIngreso || "",
       id: empleado?.id || "",
     });
