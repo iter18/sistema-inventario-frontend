@@ -3,7 +3,7 @@ import { useState, useCallback } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import AlertService from "../utils/AlertService";
-import { registraUsuario, loadEmpleados,modificarEmpleado } from "../features/portal/empleadoService";
+import { registraUsuario, loadEmpleados,modificarEmpleado,deleteEmpleado } from "../features/portal/empleadoService";
 
 export const useEmpleadoForm = ({ onGuardado}) => {
   //inicalizan estados para el formulario  
@@ -91,6 +91,20 @@ export const useEmpleadoForm = ({ onGuardado}) => {
     },
   });
 
+  const eliminarRegistro = async (empleado) => {
+        console.log('Eliminando registro...');
+      try {
+          await deleteEmpleado(empleado);
+          AlertService.success('Éxito', 'Registro eliminado correctamente.');
+          // Recargar la lista de empleados después de eliminar
+          cargarEmpleados(paginaActual);
+
+      } catch (err) {
+         AlertService.error('Error', 'No se pudo eliminar el registro.');
+            return;
+      } 
+    };
+
   const cargarEmpleados = useCallback(async (pagina = 1) => {
     setCargandoEmpleados(true);
     try {
@@ -109,7 +123,7 @@ export const useEmpleadoForm = ({ onGuardado}) => {
   };
 
   const eliminarEmpleado = (empleado) => {
-    console.log("Eliminar:", empleado);
+    eliminarRegistro(empleado);
     // Aquí iría tu lógica de eliminación
   };
 

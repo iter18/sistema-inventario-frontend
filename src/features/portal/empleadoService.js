@@ -63,3 +63,14 @@ export const modificarEmpleado = async (empleado) => {
     }
     
 };
+
+export const deleteEmpleado = async (empleado) => {
+    try {
+        const response = await axiosClientPrivate.delete(`/empleados/eliminar/${empleado}`);
+        return response.status;
+    } catch (error) {
+        console.error('Error al eliminar empleado:', error);
+        throw error;
+    }
+
+};

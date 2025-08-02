@@ -100,6 +100,11 @@ const EmpleadoPage = () => {
     setVistaActual('lista');
   };
 
+  const handlerEliminarEmpleado = (empleado) => {
+    eliminarEmpleado(empleado);
+    // Aquí podrías mostrar una confirmación o mensaje de éxito
+  }
+
    // Renderizado condicional basado en la vista actual
   const renderizarContenido = () => {
     switch (vistaActual) {
@@ -160,7 +165,7 @@ const EmpleadoPage = () => {
               <p className="text-center mt-4">Cargando empleados...</p>
             ) : (
               <>
-                <EmpleadoList empleados={listaEmpleados} onEdit={handleEditarEmpleado} onDelete={eliminarEmpleado} />
+                <EmpleadoList empleados={listaEmpleados} onEdit={handleEditarEmpleado} onDelete={handlerEliminarEmpleado} />
                 <Pagination
                         currentPage={paginaActual}
                         totalPages={totalPaginas}
