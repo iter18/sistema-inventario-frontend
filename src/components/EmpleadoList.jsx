@@ -111,7 +111,11 @@ const getInitials = (name) => {
 
 // Función helper para formatear fecha
 const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString('es-MX', {
+  // Dividir la fecha y crear Date con componentes locales
+  const [year, month, day] = dateString.split('-');
+  const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  
+  return date.toLocaleDateString('es-MX', {
     year: 'numeric',
     month: 'short',
     day: '2-digit'
