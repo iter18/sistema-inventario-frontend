@@ -105,10 +105,11 @@ export const useEmpleadoForm = ({ onGuardado}) => {
       } 
     };
 
-  const cargarEmpleados = useCallback(async (pagina = 1) => {
+  const cargarEmpleados = useCallback(async (pagina = 1, filtros = {}) => {
     setCargandoEmpleados(true);
     try {
-      const response = await loadEmpleados(pagina);
+      console.log('filtros de busqueda.', filtros);
+      const response = await loadEmpleados(pagina,filtros);
       setListaEmpleados(response.data);
       setTotalPaginas(response.meta.last_page);
     } catch (error) {

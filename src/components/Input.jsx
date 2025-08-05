@@ -37,6 +37,15 @@ const Input = ({ type = 'text', value, onChange, placeholder,obligatorio = false
       sx={{
             '& .MuiFilledInput-root': {
             backgroundColor: 'transparent',
+            focus: {
+              backgroundColor: 'transparent',
+            },
+            '&:hover': {
+              backgroundColor: 'transparent',
+            },
+            '&.Mui-focused': {
+              backgroundColor: 'transparent',
+            },
       }
   }}
     />

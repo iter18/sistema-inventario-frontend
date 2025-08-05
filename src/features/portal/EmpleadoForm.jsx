@@ -3,6 +3,8 @@ import Select from '../../components/Select';
 import Button from '../../components/Button';
 import { useDepartamentos } from '../../hooks/useDepartaments'; // Importamos nuestro componente reutilizable
 import MenuItem from '@mui/material/MenuItem';
+import AddIcon from '@mui/icons-material/Add';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 //import { useEmpleadoForm } from '../../hooks/useEmpleados';
 
 const EmpleadoForm = ({ formik, empleadoInicial, onCancelar }) => {
@@ -128,11 +130,18 @@ const EmpleadoForm = ({ formik, empleadoInicial, onCancelar }) => {
                             </label>
                             {/*error && <p className="text-sm text-center text-red-600">{error}</p>*/}
                                <div className="flex gap-4">
-                                  <Button 
-                                    type="submit"
-                                    className="py-3 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700"
-                                    disabled={formik.isSubmitting}
-                                  >
+                                   <Button
+                                      variant="contained"
+                                      color="success"
+                                      type="submit"
+                                      startIcon={<AddIcon />}
+                                      sx={{
+                                        borderRadius: 3,
+                                        textTransform: 'none',
+                                        boxShadow: 3,
+                                      }}
+                                      disabled={formik.isSubmitting}
+                                    >
                                     {formik.isSubmitting ? 'Guardando...' : (empleadoInicial ? 'Actualizar Empleado' : 'Registrar Empleado')}
                                   </Button>
                                   
@@ -140,9 +149,10 @@ const EmpleadoForm = ({ formik, empleadoInicial, onCancelar }) => {
                                     <Button 
                                       type="button"
                                       onClick={onCancelar}
-                                      className="py-3 px-4 bg-gray-600 text-white font-semibold rounded-md hover:bg-gray-700"
+                                      variant="outlined"
+                                      startIcon={<ArrowBackIcon />}
                                     >
-                                      Cancelar
+                                      Regresar
                                     </Button>
                                   )}
                               </div>

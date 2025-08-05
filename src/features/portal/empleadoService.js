@@ -23,12 +23,13 @@ export const registraUsuario = async (empleado) => {
 
 };
 
-export const loadEmpleados = async (pagina) => {
+export const loadEmpleados = async (pagina,filtros = {}) => {
     try {
         const response = await axiosClientPrivate.get('/empleados/lista',{
             params: {
                 page: pagina,
-                per_page: 3
+                per_page: 3,
+                ...filtros
             }
         });
         return response.data;

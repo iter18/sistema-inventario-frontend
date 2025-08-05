@@ -8,6 +8,7 @@ import { useCompanies } from '../../hooks/useCompanies';
 import {useNavigate} from "react-router-dom";
 import { AuthContext } from '../../store/AuthContext';
 import MenuItem from '@mui/material/MenuItem';
+import LoginIcon from '@mui/icons-material/Login';
 
 const LoginForm = () => {
   const { login } = useContext(AuthContext);
@@ -39,7 +40,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md shadow-lg shadow-orange-600">
+    <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md shadow-lg shadow-orange-700">
       <div className="flex justify-center">
         <img src={logo} alt="Logo de la Empresa" className="h-20 text-blue-600" />
       </div>
@@ -66,9 +67,30 @@ const LoginForm = () => {
           </Select>
         </div>
         {error && <p className="text-sm text-center text-red-600">{error}</p>}
-        <Button type="submit" className="w-full py-2 px-4 bg-orange-600 text-white font-semibold rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed" disabled={isLoading} >
-          {isLoading ? 'Cargando...' : 'Ingresar'}
-        </Button>
+            <Button
+                variant="contained"
+                startIcon={<LoginIcon />}
+                type="submit"
+                sx={{
+                  backgroundColor: '#ff5100ff',         // Naranja
+                  color: 'white',
+                  borderRadius: '30px',               // Bordes redondeados
+                  paddingX: 4,
+                  paddingY: 1.5,
+                  fontWeight: 'bold',
+                  textTransform: 'none',              // No todo en mayúsculas
+                  boxShadow: '0px 3px 10px rgba(0,0,0,0.2)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    backgroundColor: '#fb7100ff',       // Naranja más oscuro
+                    boxShadow: '0px 5px 15px rgba(0,0,0,0.3)',
+                    transform: 'translateY(-2px)',
+                  }
+                }}
+                fullWidth
+              >
+            Iniciar sesión
+          </Button>
       </form>
     </div>
   );

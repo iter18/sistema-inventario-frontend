@@ -6,7 +6,16 @@ import EmpleadoList from '../components/EmpleadoList';
 import Pane from '../components/Pane';
 import { useEmpleadoForm } from '../hooks/useEmpleados';
 import Pagination from '../components/Pagination';
-
+import Input from '../components/Input';
+import Select from '../components/Select';
+import { useDepartamentos } from '../hooks/useDepartaments';
+import MenuItem from '@mui/material/MenuItem';
+import Button from '../components/Button';
+import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
+import ClearIcon from '@mui/icons-material/Clear';
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
 
 const EmpleadoPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -15,6 +24,8 @@ const EmpleadoPage = () => {
   const [vistaActual, setVistaActual] = useState('lista'); // 'lista', 'formulario', 'busqueda'
   const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null);
   const [terminoBusqueda, setTerminoBusqueda] = useState('');
+  const [departamento, setDepartamento] = useState('');
+  const [filtrosBusqueda, setFiltrosBusqueda] = useState({});
 
     // Función para volver a la lista
   const handleVolverALista = () => {
@@ -25,7 +36,7 @@ const EmpleadoPage = () => {
     setSearchParams({});
   };
 
-
+  const {departamentos,isLoading: departamentosLoading} = useDepartamentos();
   const {
     formik,
     listaEmpleados,
@@ -61,11 +72,10 @@ const EmpleadoPage = () => {
     }
   }, [searchParams, listaEmpleados]);
 
-  // Cargar empleados al montar el componente
+  // Cargar empleados al montar, y cuando cambia la página o los filtros
   useEffect(() => {
-    cargarEmpleados(paginaActual);
-  }, [paginaActual, cargarEmpleados]);
-
+    cargarEmpleados(paginaActual, filtrosBusqueda);
+  }, [paginaActual, filtrosBusqueda, cargarEmpleados]);
 
    // Función para manejar la edición
   const handleEditarEmpleado = (empleado) => {
@@ -85,25 +95,29 @@ const EmpleadoPage = () => {
     regUpdate(false);
   };
 
-
-  // Función para mostrar búsqueda
-  const handleMostrarBusqueda = () => {
-    setVistaActual('busqueda');
-    setSearchParams({ action: 'search' });
-    regUpdate(false);
-  };
     // Función para manejar la búsqueda
-  const handleBuscar = (termino) => {
-    setTerminoBusqueda(termino);
-    // Aquí filtrarías los empleados o harías una nueva consulta
-    // Por simplicidad, volvemos a la lista
-    setVistaActual('lista');
+  const handleBuscar = () => {
+    const nuevosFiltros = {};
+    if (terminoBusqueda) nuevosFiltros.nombreEmpleado = terminoBusqueda;
+    if (departamento) nuevosFiltros.idDepartamento = departamento;
+
+    setPaginaActual(1);
+    setFiltrosBusqueda(nuevosFiltros);
   };
 
   const handlerEliminarEmpleado = (empleado) => {
     eliminarEmpleado(empleado);
     // Aquí podrías mostrar una confirmación o mensaje de éxito
   }
+  // 1. Añade esta función en tu componente
+  const handleLimpiarFiltros = () => {
+    setTerminoBusqueda('');
+    setDepartamento('');
+    setFiltrosBusqueda({});
+    setPaginaActual(1); // Vuelve a la primera página sin filtros
+  };
+  
+
 
    // Renderizado condicional basado en la vista actual
   const renderizarContenido = () => {
@@ -143,36 +157,124 @@ const EmpleadoPage = () => {
         return (
           <Pane 
             title="Gestión de Empleados"
-            descrpcion="Lista de todos los empleados registrados en el sistema."
+            descrpcion="Aquí podrás dar de alta empleados, editarlos y eliminarlos."
           >
-            {/* Botones de acción */}
-            <div className="mb-4 flex gap-2">
-              <button
-                onClick={handleNuevoEmpleado}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                Nuevo Empleado
-              </button>
-              <button
-                onClick={handleMostrarBusqueda}
-                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
-              >
-                Buscar
-              </button>
-            </div>
+            {/* Aquí podrías incluir un componente de búsqueda si lo deseas */}
+            {/* <EmpleadoSearch onBuscar={handleBuscar} /> */}
+            <hr className="border-gray-400 mb-4"></hr>
+            <div className="mb-4 flex flex-wrap gap-6 items-center justify-center ">
+              <div className="flex flex-col w-90">
+                <Input
+                  type="text"
+                  placeholder="Buscar por nombre..."
+                  label="Buscar Empleado"
+                  name="nombreEmpleado"
+                  id="nombreEmpleado"
+                  value={terminoBusqueda}
+                  onChange={(e) => setTerminoBusqueda(e.target.value)}
+                  className="px-2  border rounded"
+                />
 
+                <Select id="departamento" 
+                        name="departamento" 
+                        value={departamento}
+                        onChange={(e) => setDepartamento(e.target.value)}
+                        className="mt-2 block w-full border-none bg-transparent px-0.5
+                            shadow-[inset_0_-2px_0_0_theme(colors.gray.200)]
+                            focus:shadow-[inset_0_-2px_0_0_theme(colors.black)]
+                            focus:outline-none focus:ring-0"
+                          disabled={departamentosLoading}
+                          label={departamentosLoading ? "Cargando departamentos..." : "Seleccione un departamento"}
+                        >
+                        {Array.isArray(departamentos) && departamentos.map(dep => (
+                          <MenuItem key={dep.id} value={dep.id}>{dep.departamento}</MenuItem>
+                        ))}
+                </Select>
+                {/* Botones de acción */}
+                <div className="mb-4 mt-4 flex flex-wrap gap-3">
+                  <Button
+                    variant="contained"
+                    color="success"
+                    startIcon={<AddIcon />}
+                    onClick={handleNuevoEmpleado}
+                    sx={{
+                      borderRadius: 3,
+                      textTransform: 'none',
+                      boxShadow: 3,
+                    }}
+                  >
+                    Nuevo Empleado
+                  </Button>
+
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<SearchIcon />}
+                    onClick={handleBuscar}
+                    sx={{
+                      borderRadius: 3,
+                      textTransform: 'none',
+                      boxShadow: 3,
+                    }}
+                  >
+                    Buscar
+                  </Button>
+
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    startIcon={<ClearIcon />}
+                    onClick={handleLimpiarFiltros}
+                    sx={{
+                      borderRadius: 3,
+                      textTransform: 'none',
+                      boxShadow: 1,
+                      '&:hover': {
+                        backgroundColor: '#ffecec',
+                      },
+                    }}
+                  >
+                    Limpiar
+                  </Button>
+                </div>
+              </div>
+            </div>
+            
             {cargandoEmpleados ? (
-              <p className="text-center mt-4">Cargando empleados...</p>
-            ) : (
-              <>
-                <EmpleadoList empleados={listaEmpleados} onEdit={handleEditarEmpleado} onDelete={handlerEliminarEmpleado} />
-                <Pagination
+                <div className="flex justify-center items-center py-10">
+                  <CircularProgress color="primary" size={50} />
+                </div>
+              ) : (
+                <>
+                  {listaEmpleados.length > 0 ? (
+                    <>
+                      <EmpleadoList
+                        empleados={listaEmpleados}
+                        onEdit={handleEditarEmpleado}
+                        onDelete={handlerEliminarEmpleado}
+                      />
+                      <Pagination
                         currentPage={paginaActual}
                         totalPages={totalPaginas}
                         onPageChange={(page) => setPaginaActual(page)}
                       />
-              </>
-            )}
+                    </>
+                  ) : (
+                    <Alert
+                      severity="warning"
+                      variant="outlined"
+                      sx={{
+                        mt: 4,
+                        borderColor: '#f44336',
+                        color: '#f44336',
+                        backgroundColor: '#fff0f0',
+                      }}
+                    >
+                      No existen registros con los criterios de búsqueda.
+                    </Alert>
+                  )}
+                </>
+              )}
           </Pane>
         );
     }
