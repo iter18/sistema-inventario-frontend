@@ -88,8 +88,9 @@ const LoginForm = () => {
                   }
                 }}
                 fullWidth
+                 disabled={isLoading}
               >
-            Iniciar sesión
+                          {isLoading ? 'Cargando...' : 'Ingresar'}
           </Button>
       </form>
     </div>
