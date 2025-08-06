@@ -43,8 +43,8 @@ const StyledDrawer = styled(Drawer)(({ theme, open }) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
-    backgroundColor: '#0a0e17',
-    backgroundImage: 'linear-gradient(145deg, #0a0e17 0%, #1a1f2e 50%, #0f1419 100%)',
+    backgroundColor: '#0a0a0a',
+    backgroundImage: 'linear-gradient(145deg, #0a0a0a 0%, #111111 50%, #1a1a1a 100%)',
     border: 'none',
     boxShadow: `
       8px 0 32px rgba(255, 164, 89, 0.4),
@@ -69,6 +69,7 @@ const StyledDrawer = styled(Drawer)(({ theme, open }) => ({
     '100%': { opacity: 1 },
   },
 }));
+
 
 const GlowListItemButton = styled(ListItemButton)(({ theme, active }) => ({
   borderRadius: '12px',
