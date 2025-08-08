@@ -166,8 +166,8 @@ const EmpleadoPage = () => {
               <div className="flex flex-col w-90">
                 <Input
                   type="text"
-                  placeholder="Buscar por nombre..."
-                  label="Buscar Empleado"
+                  placeholder="Juan Peréz..."
+                  label="Buscar por nombre empleado"
                   name="nombreEmpleado"
                   id="nombreEmpleado"
                   value={terminoBusqueda}
@@ -184,7 +184,7 @@ const EmpleadoPage = () => {
                             focus:shadow-[inset_0_-2px_0_0_theme(colors.black)]
                             focus:outline-none focus:ring-0"
                           disabled={departamentosLoading}
-                          label={departamentosLoading ? "Cargando departamentos..." : "Seleccione un departamento"}
+                          label={departamentosLoading ? "Cargando departamentos..." : "Buscar por departamento"}
                         >
                         {Array.isArray(departamentos) && departamentos.map(dep => (
                           <MenuItem key={dep.id} value={dep.id}>{dep.departamento}</MenuItem>

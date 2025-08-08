@@ -169,7 +169,7 @@ const Sidebar = () => {
   ];
 
   const inventorySubmenu = [
-    { name: 'Equipo Hardware', path: '/inventory/hardware', icon: ComputerIcon },
+    { name: 'Equipo Hardware', path: '/portal/inventario', icon: ComputerIcon },
     { name: 'Asignaciones', path: '/inventory/assignments', icon: AssignmentIcon },
     { name: 'Reportes', path: '/inventory/reports', icon: ReportsIcon },
   ];
